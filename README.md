@@ -41,27 +41,30 @@
 工具包的导入方法：
 
 ```go
-import "github.com/SimonWang00/eureka"
+import "github.com/SimonWang00/goeureka/eureka"
 ```
 
 如果您默认使用本地启动的Eureka Server，注册代码如下：
 
 ```go
-goeureka.Register("my-goserver", "8080", "8443")
+eureka.RegisterLocal("my-goserver", "8080", "8443")
 ```
 
 或者这样：
 ```go
-goeureka.RegisterAt("http://127.0.0.1:8761","my-goserver", "8080", "8443")
+eureka.RegisterClient("http://127.0.0.1:8761","my-goserver", "8080", "8443")
 ```
 
 register方法是通过心跳与Eureka服务端保持通信，当Eureka客户端和服务端注册成功后，则每30秒钟发送一次心跳。当您的微服务实例通过Sigterm或OS中断信号退出时，则本客户端会在关闭之前注销Eureka，以确保服务实例不会发生冲突。
 
 ## 接口函数
 
-- RegisterAt - registers your application at a specific Eureka service URL.
-- Register - registers your application at the default Eureka service URL http://192.168.99.100:8761 (e.g. typical local Docker installation)
-- GetServiceInstances - Returns all running instances of a given appName
+- RegisterLocal-RegisterClient register this app at the Eureka server
+- RegisterClient-RegisterClient register this app at the Eureka server
+- GetServiceInstances- GetServiceInstances is a function query all instances by appName
+- GetServiceInstanceIdWithappName-GetServiceInstanceIdWithappName : in this function, we can get InstanceId by appName
+- GetServices-GetServices :get all services for eureka
+- Sendheartbeat-Sendheartbeat is a test case for heartbeat
 
 这些register方法会自动处理重试、心跳和取消注册。
 
@@ -69,10 +72,12 @@ register方法是通过心跳与Eureka服务端保持通信，当Eureka客户端
 
 在http中使用：
 
-
+待补充
 
 在gin框架中使用：
 
-
+待补充
 
 在beego中使用：
+
+待补充
