@@ -41,18 +41,18 @@
 工具包的导入方法：
 
 ```go
-import "github.com/SimonWang00/goeureka/eureka"
+import "github.com/SimonWang00/goeureka"
 ```
 
 如果您默认使用本地启动的Eureka Server，注册代码如下：
 
 ```go
-eureka.RegisterLocal("my-goserver", "8080", "8443")
+goeureka.RegisterLocal("my-goserver", "8080", "8443")
 ```
 
 或者这样：
 ```go
-eureka.RegisterClient("http://127.0.0.1:8761","my-goserver", "8080", "8443")
+goeureka.RegisterClient("http://127.0.0.1:8761","my-goserver", "8080", "8443")
 ```
 
 register方法是通过心跳与Eureka服务端保持通信，当Eureka客户端和服务端注册成功后，则每30秒钟发送一次心跳。当您的微服务实例通过Sigterm或OS中断信号退出时，则本客户端会在关闭之前注销Eureka，以确保服务实例不会发生冲突。
