@@ -1,4 +1,4 @@
-package eureka
+package goeureka
 
 //File  : version.go
 //Author: Simon

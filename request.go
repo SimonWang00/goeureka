@@ -1,4 +1,4 @@
-package eureka
+package goeureka
 
 //File  : request.go
 //Author: Simon

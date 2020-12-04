@@ -1,4 +1,4 @@
-package eureka
+package goeureka
 
 //File  : models.go
 //Author: Simon

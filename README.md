@@ -8,7 +8,7 @@
 - **appid**是应用程序的名称；
 - **instanceid**是与实例关联的唯一id。
 
-在AWS云中，instanceID是实例的**实例id**，在其他数据中心，是实例的**主机名**。对于JSON/XML，提供的内容类型必须是**application/XML**或者**application/JSON**。
+在AWS云中，instanceID是**实例id**，在其他数据中心实例是**主机名**。Eureka返回的数据格式为JSON/XML，所以请求的Content-type必须是**application/XML**或者**application/JSON**。
 
 | 描述                                                         | 接口名称                                                     | 输入输出                                                     |
 | ------------------------------------------------------------ | ------------------------------------------------------------ | ------------------------------------------------------------ |
@@ -66,7 +66,7 @@ register方法是通过心跳与Eureka服务端保持通信，当Eureka客户端
 - GetServices-GetServices :get all services for eureka
 - Sendheartbeat-Sendheartbeat is a test case for heartbeat
 
-这些register方法会自动处理重试、心跳和取消注册。
+RegisterLocal和RegisterClient方法自动封装了注册、发送心跳和取消注册的功能，直接导入到客户端完成调用即可。
 
 ## 使用示例
 
