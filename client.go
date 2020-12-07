@@ -5,7 +5,6 @@ package goeureka
 //Describe: eureka client for server
 //Date  : 2020/12/3
 
-
 import (
 	"encoding/json"
 	"log"
@@ -39,7 +38,7 @@ var configStr = `{
     },
     "securePort": {
       "$":${securePort},
-      "@enabled": true
+      "@enabled": false
     },
     "homePageUrl" : "http://${ipAddress}:${port}/",
     "statusPageUrl": "http://${ipAddress}:${port}/info",
@@ -49,7 +48,7 @@ var configStr = `{
       "name": "MyOwn"
     },
     "metadata": {
-      "instanceId" : "${appName}:${instanceId}"
+      "instanceId" : "${appName}${instanceId}:${port}"
     }
   }
 }`
@@ -74,11 +73,12 @@ func RegisterClient(eurekaUrl string, appName string, port string, securePort st
 // POST /eureka/v2/apps/appID
 // Input: JSON/XML payload HTTP Code: 204 on success
 func RegisterLocal(appName string, port string, securePort string) {
+	appName = strings.ToUpper(appName)
 	// load config
 	cfg := string(configStr)
 	cfg = strings.Replace(cfg, "${ipAddress}", getLocalIP(), -1)
-	cfg = strings.Replace(cfg, "${port}", port, 8080)
-	cfg = strings.Replace(cfg, "${securePort}", securePort, 8443)
+	cfg = strings.Replace(cfg, "${port}", port, -1)
+	cfg = strings.Replace(cfg, "${securePort}", securePort, -1)
 	cfg = strings.Replace(cfg, "${instanceId}", instanceId, -1)
 	cfg = strings.Replace(cfg, "${appName}", appName, -1)
 
@@ -114,6 +114,7 @@ func RegisterLocal(appName string, port string, securePort string) {
 // HTTP Code: 200 on success Output: JSON
 func GetServiceInstances(appName string) ([]Instance, error) {
 	var m ServiceResponse
+	appName = strings.ToUpper(appName)
 	// define get instance request
 	requestAction := RequestAction{
 		Url:         discoveryServerUrl + eurekaPath + appName,
@@ -144,17 +145,19 @@ func GetServiceInstances(appName string) ([]Instance, error) {
 // Notes:
 //		1. use sendheartbeat
 // 		2. deregister
-func GetServiceInstanceIdWithappName(appName string) (string, error) {
+// return instanceId, lastDirtyTimestamp
+func GetInfoWithappName(appName string) (string,string, error) {
+	appName = strings.ToUpper(appName)
 	instances, err := GetServiceInstances(appName)
 	if err != nil{
-		return "", err
+		return "","", err
 	}
 	for _, ins := range instances{
 		if ins.App == appName{
-			return ins.InstanceId, nil
+			return ins.InstanceId,ins.LastDirtyTimestamp, nil
 		}
 	}
-	return "", err
+	return "","", err
 }
 
 // GetServices :get all services for eureka
@@ -200,7 +203,8 @@ func startHeartbeat(appName string) {
 //* 200 on success
 //* 404 if instanceID doesn’t exist
 func heartbeat(appName string) {
-	instanceId, err := GetServiceInstanceIdWithappName(appName)
+	appName = strings.ToUpper(appName)
+	instanceId, lastDirtyTimestamp,err := GetInfoWithappName(appName)
 	if instanceId ==""{
 		log.Printf("instanceId is None , Please check at (%v) \n", discoveryServerUrl)
 		return
@@ -210,7 +214,8 @@ func heartbeat(appName string) {
 		return
 	} else {
 		heartbeatAction := RequestAction{
-			Url:         discoveryServerUrl + eurekaPath + appName + "/" + instanceId,
+			//http://127.0.0.1:8761/eureka/apps/TORNADO-SERVER/127.0.0.1:tornado-server:3333/status?value=UP&lastDirtyTimestamp=1607321668458
+			Url:         discoveryServerUrl + eurekaPath + appName + "/" + instanceId + "/status?value=UP&lastDirtyTimestamp=" + lastDirtyTimestamp,
 			Method:      "PUT",
 			ContentType: "application/json;charset=UTF-8",
 		}
@@ -229,10 +234,14 @@ func Sendheartbeat(appName string)  {
 // DELETE /eureka/v2/apps/appID/instanceID
 // HTTP Code: 200 on success
 func deregister(appName string) {
+	appName = strings.ToUpper(appName)
 	log.Println("Trying to deregister application " + appName)
+	instanceId,lastDirtyTimestamp, _ := GetInfoWithappName(appName)
+	log.Printf("deregister instanceid:\n", instanceId)
 	// cancel registerion
 	deregisterAction := RequestAction{
-		Url:         discoveryServerUrl + eurekaPath + appName + "/" + getLocalIP(),
+		//http://127.0.0.1:8761/eureka/apps/TORNADO-SERVER/127.0.0.1:tornado-server:3333/status?value=UP&lastDirtyTimestamp=1607321668458
+		Url:         discoveryServerUrl + eurekaPath + appName + "/" + instanceId + "/status?value=UP&lastDirtyTimestamp=" + lastDirtyTimestamp,
 		ContentType: "application/json;charset=UTF-8",
 		Method:      "DELETE",
 	}

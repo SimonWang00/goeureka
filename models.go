@@ -111,6 +111,7 @@ type Instance struct {
 	IpAddr	string	`json:"ipAddr"`
 	Status	string	`json:"status"`
 	SecurePort SecurePort	`json:"securePort"`
+	LastDirtyTimestamp string `json:"lastDirtyTimestamp"`
 }
 
 // pare port
