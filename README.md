@@ -48,7 +48,25 @@ RegisterLocal和RegisterClient方法自动封装了注册、发送心跳和取�
 
 **在http中使用：**
 
-待补充
+```go
+import (
+	"fmt"
+	"github.com/SimonWang00/goeureka"
+	"net/http"
+)
+
+func main()  {
+	goeureka.RegisterClient("http://127.0.0.1:8761","myapp", "8080", "43")
+	http.HandleFunc("/hello", func(responseWriter http.ResponseWriter, request *http.Request) {
+		resp := "hello goeureka!"
+		_, _ = responseWriter.Write([]byte(resp))
+	})
+	// start server
+	if err := http.ListenAndServe("127.0.0.1:8000", nil); err != nil {
+		fmt.Println(err)
+	}
+}
+```
 
 **在gin框架中使用：**
 

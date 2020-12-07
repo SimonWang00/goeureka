@@ -24,35 +24,6 @@ var (
 	discoveryServerUrl = "http://127.0.0.1:8761"
 )
 
-// define eureka config
-var configStr = `{
-  "instance": {
-    "hostName":"${ipAddress}",
-    "app":"${appName}",
-    "ipAddr":"${ipAddress}",
-    "vipAddress":"${appName}",
-    "status":"UP",
-    "port": {
-      "$":${port},
-      "@enabled": true
-    },
-    "securePort": {
-      "$":${securePort},
-      "@enabled": false
-    },
-    "homePageUrl" : "http://${ipAddress}:${port}/",
-    "statusPageUrl": "http://${ipAddress}:${port}/info",
-    "healthCheckUrl": "http://${ipAddress}:${port}/health",
-    "dataCenterInfo" : {
-      "@class":"com.netflix.appinfo.InstanceInfo$DefaultDataCenterInfo",
-      "name": "MyOwn"
-    },
-    "metadata": {
-      "instanceId" : "${appName}${instanceId}:${port}"
-    }
-  }
-}`
-
 
 // RegisterClient register this app at the Eureka server
 // params: eurekaUrl, eureka server url
@@ -74,13 +45,7 @@ func RegisterClient(eurekaUrl string, appName string, port string, securePort st
 // Input: JSON/XML payload HTTP Code: 204 on success
 func RegisterLocal(appName string, port string, securePort string) {
 	appName = strings.ToUpper(appName)
-	// load config
-	cfg := string(configStr)
-	cfg = strings.Replace(cfg, "${ipAddress}", getLocalIP(), -1)
-	cfg = strings.Replace(cfg, "${port}", port, -1)
-	cfg = strings.Replace(cfg, "${securePort}", securePort, -1)
-	cfg = strings.Replace(cfg, "${instanceId}", instanceId, -1)
-	cfg = strings.Replace(cfg, "${appName}", appName, -1)
+	cfg := newConfig(appName, port,securePort )
 
 	// define Register request
 	registerAction := RequestAction{
@@ -237,7 +202,6 @@ func deregister(appName string) {
 	appName = strings.ToUpper(appName)
 	log.Println("Trying to deregister application " + appName)
 	instanceId,lastDirtyTimestamp, _ := GetInfoWithappName(appName)
-	log.Printf("deregister instanceid:\n", instanceId)
 	// cancel registerion
 	deregisterAction := RequestAction{
 		//http://127.0.0.1:8761/eureka/apps/TORNADO-SERVER/127.0.0.1:tornado-server:3333/status?value=UP&lastDirtyTimestamp=1607321668458
