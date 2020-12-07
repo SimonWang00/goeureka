@@ -89,3 +89,14 @@ func main()  {
 **在beego中使用：**
 
 待补充
+
+
+
+## test
+
+java消费调用端测试代码：
+
+[eurekaconsumer](!https://github.com/SimonWang00/eurekaconsumer.git)
+
+
+
