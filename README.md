@@ -46,14 +46,28 @@ RegisterLocal和RegisterClient方法自动封装了注册、发送心跳和取�
 
 ## 使用示例
 
-在http中使用：
+**在http中使用：**
 
 待补充
 
-在gin框架中使用：
+**在gin框架中使用：**
 
-待补充
+```go
+import (
+	"github.com/SimonWang00/goeureka"
+	"github.com/gin-gonic/gin"
+)
 
-在beego中使用：
+func main()  {
+	r := gin.Default()
+	r.GET("hello", func(c *gin.Context) {
+		c.String(200, "hello goeureka")
+	})
+	goeureka.RegisterClient("http://127.0.0.1:8761","myapp", "8080", "43")
+	r.Run("127.0.0.1:8000")
+}
+```
+
+**在beego中使用：**
 
 待补充

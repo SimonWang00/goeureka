@@ -6,7 +6,7 @@ package main
 //Date  : 2020/12/3
 
 import (
-	"github.com/dev/goeureka"
+	"github.com/SimonWang00/goeureka"
 	"github.com/gin-gonic/gin"
 )
 
