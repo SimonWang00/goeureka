@@ -23,17 +23,14 @@ import "github.com/SimonWang00/goeureka"
 如果您默认使用本地启动的Eureka Server，注册代码如下：
 
 ```go
-goeureka.RegisterLocal("my-goserver", "8080", "43")
-```
-
-或者这样：
-```go
-goeureka.RegisterClient("http://127.0.0.1:8761","my-goserver", "8080", "43")
+goeureka.RegisterClient("http://127.0.0.1:8761","my-goserver", "8080", "9043")
 ```
 
 register方法是通过心跳与Eureka服务端保持通信，当Eureka客户端和服务端注册成功后，则每30秒钟发送一次心跳。当您的微服务实例通过Sigterm或OS中断信号退出时，则本客户端会在关闭之前注销Eureka，以确保服务实例不会发生冲突。
 
 ## 接口函数
+
+RegisterLocal和RegisterClient方法自动封装了注册、发送心跳和取消注册的功能，直接导入到客户端完成调用即可。
 
 - RegisterLocal-RegisterClient register this app at the Eureka server
 - RegisterClient-RegisterClient register this app at the Eureka server
@@ -41,8 +38,6 @@ register方法是通过心跳与Eureka服务端保持通信，当Eureka客户端
 - GetServiceInstanceIdWithappName-GetServiceInstanceIdWithappName : in this function, we can get InstanceId by appName
 - GetServices-GetServices :get all services for eureka
 - Sendheartbeat-Sendheartbeat is a test case for heartbeat
-
-RegisterLocal和RegisterClient方法自动封装了注册、发送心跳和取消注册的功能，直接导入到客户端完成调用即可。
 
 ## 使用示例
 
@@ -92,11 +87,8 @@ func main()  {
 
 
 
-## test
+## Test
 
-java消费调用端测试代码：
+ java端测试代码
 
 [eurekaconsumer](!https://github.com/SimonWang00/eurekaconsumer.git)
-
-
-
