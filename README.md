@@ -5,10 +5,10 @@
 
 本项目封装了Eureka rest操作，实现了以下功能：
 
-- register appid
-- sendheartbeat appid
-- deregister appid
-- instances of appid
+- register 
+- sendheartbeat 
+- deregister 
+- instances 
 
 调用前三个特性register 、heartbeat 和deregister基本上可以实现微服务注册到Eureka中心，其中appid实例是客户端的名称。
 
@@ -32,12 +32,12 @@ register方法是通过心跳与Eureka服务端保持通信，当Eureka客户端
 
 RegisterLocal和RegisterClient方法自动封装了注册、发送心跳和取消注册的功能，直接导入到客户端完成调用即可。
 
-- RegisterLocal-RegisterClient register this app at the Eureka server
-- RegisterClient-RegisterClient register this app at the Eureka server
-- GetServiceInstances- GetServiceInstances is a function query all instances by appName
-- GetServiceInstanceIdWithappName-GetServiceInstanceIdWithappName : in this function, we can get InstanceId by appName
-- GetServices-GetServices :get all services for eureka
-- Sendheartbeat-Sendheartbeat is a test case for heartbeat
+- RegisterLocal
+- RegisterClient
+- GetServiceInstances
+- GetInfoWithappName
+- GetServices
+- Sendheartbeat
 
 ## 使用示例
 
