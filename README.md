@@ -1,5 +1,12 @@
 # goeureka
-提供Go微服务客户端注册到Eureka中心。
+
+![image]( https://img.shields.io/badge/goeureka-v1.0.0-blue )
+
+[![image](https://img.shields.io/badge/contributors-1-blue)](https://github.com/SimonWang00/goeureka/graphs/contributors)
+
+提供Go微服务客户端注册到Eureka中心。（通过测试验证，已用于生产）
+
+![](assets/goeureka.jpg)
 
 ## 功能特性
 
@@ -10,7 +17,7 @@
 - deregister 
 - instances 
 
-调用前三个特性register 、heartbeat 和deregister基本上可以实现微服务注册到Eureka中心，其中appid实例是客户端的名称。
+调用前三个特性register 、heartbeat 和deregister基本上可以实现微服务注册到Eureka中心。register方法是通过心跳与Eureka服务端保持通信，当Eureka客户端和服务端注册成功后，则每30秒钟发送一次心跳。当您的微服务实例通过Sigterm或OS中断信号退出时，则本客户端会在关闭之前注销Eureka，以确保服务实例不会发生冲突。
 
 ## 使用方法
 
@@ -20,24 +27,13 @@
 import "github.com/SimonWang00/goeureka"
 ```
 
-如果您默认使用本地启动的Eureka Server，注册代码如下：
+注册代码如下：
 
 ```go
-goeureka.RegisterClient("http://127.0.0.1:8761","my-goserver", "8080", "9043")
+goeureka.RegisterClient("http://127.0.0.1:8761","my-goserver", "8000", "43")
 ```
 
-register方法是通过心跳与Eureka服务端保持通信，当Eureka客户端和服务端注册成功后，则每30秒钟发送一次心跳。当您的微服务实例通过Sigterm或OS中断信号退出时，则本客户端会在关闭之前注销Eureka，以确保服务实例不会发生冲突。
-
-## 接口函数
-
-RegisterLocal和RegisterClient方法自动封装了注册、发送心跳和取消注册的功能，直接导入到客户端完成调用即可。
-
-- RegisterLocal
-- RegisterClient
-- GetServiceInstances
-- GetInfoWithappName
-- GetServices
-- Sendheartbeat
+> **Notes:** RegisterClient 为web server对应的端口号
 
 ## 使用示例
 
@@ -51,7 +47,7 @@ import (
 )
 
 func main()  {
-	goeureka.RegisterClient("http://127.0.0.1:8761","myapp", "8080", "43")
+	goeureka.RegisterClient("http://127.0.0.1:8761","myapp", "8000", "43")
 	http.HandleFunc("/hello", func(responseWriter http.ResponseWriter, request *http.Request) {
 		resp := "hello goeureka!"
 		_, _ = responseWriter.Write([]byte(resp))
@@ -76,19 +72,15 @@ func main()  {
 	r.GET("hello", func(c *gin.Context) {
 		c.String(200, "hello goeureka")
 	})
-	goeureka.RegisterClient("http://127.0.0.1:8761","myapp", "8080", "43")
+	goeureka.RegisterClient("http://127.0.0.1:8761","myapp", "8000", "43")
 	r.Run("127.0.0.1:8000")
 }
 ```
 
-**在beego中使用：**
-
-待补充
-
-
-
 ## Test
 
- java端测试代码
+ 通过了测试，已经用于golang的微服务生产环境。
+
+java端测试代码
 
 [eurekaconsumer](!https://github.com/SimonWang00/eurekaconsumer.git)
