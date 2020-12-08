@@ -1,8 +1,6 @@
 # goeureka
 
-![image]( https://img.shields.io/badge/goeureka-v1.0.0-blue )
-
-[![image](https://img.shields.io/badge/contributors-1-blue)](https://github.com/SimonWang00/goeureka/graphs/contributors)
+![image](https://img.shields.io/badge/build-passing-blue)![image](https://img.shields.io/badge/goeureka-v1.0.0-blue)[![image](https://img.shields.io/badge/contributors-1-blue)](https://github.com/SimonWang00/goeureka/graphs/contributors)
 
 提供Go微服务客户端注册到Eureka中心。（通过测试验证，已用于生产）
 
