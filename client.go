@@ -30,10 +30,10 @@ var (
 // params: appName define your app name what you want
 // params: port app instance port
 // params: securePort
-func RegisterClient(eurekaUrl string, appName string, port string, securePort string) {
+func RegisterClient(eurekaUrl string, localip string, appName string, port string, securePort string) {
 	eurekaUrl = strings.Trim(eurekaUrl, "/")
 	discoveryServerUrl = eurekaUrl
-	RegisterLocal(appName, port, securePort)
+	RegisterLocal(appName,localip , port, securePort)
 }
 
 
@@ -43,9 +43,9 @@ func RegisterClient(eurekaUrl string, appName string, port string, securePort st
 // Register new application instance
 // POST /eureka/v2/apps/appID
 // Input: JSON/XML payload HTTP Code: 204 on success
-func RegisterLocal(appName string, port string, securePort string) {
+func RegisterLocal(appName string, localip string, port string, securePort string) {
 	appName = strings.ToUpper(appName)
-	cfg := newConfig(appName, port,securePort )
+	cfg := newConfig(appName,localip ,port,securePort )
 
 	// define Register request
 	registerAction := RequestAction{
