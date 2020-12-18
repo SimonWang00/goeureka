@@ -43,10 +43,13 @@ var configStr = `{
 
 
 // newConfig load cfg from configStr
-func newConfig(appName, port, securePort string)  string{
+func newConfig(appName,localip, port, securePort string)  string{
+	if localip == ""{
+		localip = getLocalIP()
+	}
 	// load config
 	cfg := string(configStr)
-	cfg = strings.Replace(cfg, "${ipAddress}", getLocalIP(), -1)
+	cfg = strings.Replace(cfg, "${ipAddress}", localip, -1)
 	cfg = strings.Replace(cfg, "${port}", port, -1)
 	cfg = strings.Replace(cfg, "${securePort}", securePort, -1)
 	cfg = strings.Replace(cfg, "${appName}", appName, -1)
