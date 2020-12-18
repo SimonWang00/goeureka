@@ -1,6 +1,6 @@
 # goeureka
 
-![image](https://img.shields.io/badge/build-passing-blue)![image](https://img.shields.io/badge/goeureka-v1.0.0-blue)[![image](https://img.shields.io/badge/contributors-1-blue)](https://github.com/SimonWang00/goeureka/graphs/contributors)
+![image](https://img.shields.io/badge/build-passing-blue)![image](https://img.shields.io/badge/goeureka-v1.0.1-blue)[![image](https://img.shields.io/badge/contributors-1-blue)](https://github.com/SimonWang00/goeureka/graphs/contributors)
 
 提供Go微服务客户端注册到Eureka中心。（通过测试验证，已用于生产）
 
@@ -28,10 +28,18 @@ import "github.com/SimonWang00/goeureka"
 注册代码如下：
 
 ```go
-goeureka.RegisterClient("http://127.0.0.1:8761","my-goserver", "8000", "43")
+goeureka.RegisterClient("http://127.0.0.1:8761","59.172.3.26","my-goserver", "8000", "43")
 ```
 
-> **Notes:** RegisterClient 为web server对应的端口号
+> **Notes:** RegisterClient 为web server对应的端口号，涉及到异地机房联调采用docker部署的话，需要映射公网IP，如59.172.3.26
+
+或者
+
+```go
+goeureka.RegisterClient("http://127.0.0.1:8761","","my-goserver", "8000", "43")
+```
+
+> **Notes：**第二项参数为空代表默认使用本机IP地址
 
 ## 使用示例
 
@@ -45,7 +53,7 @@ import (
 )
 
 func main()  {
-	goeureka.RegisterClient("http://127.0.0.1:8761","myapp", "8000", "43")
+	goeureka.RegisterClient("http://127.0.0.1:8761","","myapp", "8000", "43")
 	http.HandleFunc("/hello", func(responseWriter http.ResponseWriter, request *http.Request) {
 		resp := "hello goeureka!"
 		_, _ = responseWriter.Write([]byte(resp))
@@ -70,7 +78,7 @@ func main()  {
 	r.GET("hello", func(c *gin.Context) {
 		c.String(200, "hello goeureka")
 	})
-	goeureka.RegisterClient("http://127.0.0.1:8761","myapp", "8000", "43")
+	goeureka.RegisterClient("http://127.0.0.1:8761","","myapp", "8000", "43")
 	r.Run("127.0.0.1:8000")
 }
 ```
