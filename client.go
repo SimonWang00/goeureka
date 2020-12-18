@@ -18,6 +18,7 @@ import (
 
 var (
 	instanceId string
+	Vport	   string
 	// define eureka path
 	eurekaPath = "/eureka/apps/"
 	// local eureka url
@@ -45,6 +46,7 @@ func RegisterClient(eurekaUrl string, localip string, appName string, port strin
 // Input: JSON/XML payload HTTP Code: 204 on success
 func RegisterLocal(appName string, localip string, port string, securePort string) {
 	appName = strings.ToUpper(appName)
+	Vport = port
 	cfg := newConfig(appName,localip ,port,securePort )
 
 	// define Register request
@@ -61,7 +63,7 @@ func RegisterLocal(appName string, localip string, port string, securePort strin
 		if result {
 			log.Println("Registration OK")
 			handleSigterm(appName)
-			go startHeartbeat(appName)
+			go startHeartbeat(appName, localip)
 			break
 		} else {
 			log.Println("Registration attempt of " + appName + " failed...")
@@ -155,10 +157,10 @@ func GetServices() ([]Application, error) {
 
 // startHeartbeat function will start as goroutine, will loop indefinitely until application exits.
 // params: appName
-func startHeartbeat(appName string) {
+func startHeartbeat(appName string, localip string) {
 	for {
 		time.Sleep(time.Second * 30)
-		Sendheartbeat(appName)
+		Sendheartbeat(appName, localip)
 	}
 }
 
@@ -167,7 +169,7 @@ func startHeartbeat(appName string) {
 //HTTP Code:
 //* 200 on success
 //* 404 if instanceID doesn’t exist
-func heartbeat(appName string) {
+func heartbeat(appName string, localip string) {
 	appName = strings.ToUpper(appName)
 	instanceId, lastDirtyTimestamp,err := GetInfoWithappName(appName)
 	if instanceId ==""{
@@ -178,6 +180,10 @@ func heartbeat(appName string) {
 		log.Printf("Can't get instanceId from Eureka server by appName \n")
 		return
 	} else {
+		if localip != ""{
+			// "127.149.222.221:GOLANG-SERVER:8889"
+			instanceId = localip + ":" +  appName + ":" +  Vport
+		}
 		heartbeatAction := RequestAction{
 			//http://127.0.0.1:8761/eureka/apps/TORNADO-SERVER/127.0.0.1:tornado-server:3333/status?value=UP&lastDirtyTimestamp=1607321668458
 			Url:         discoveryServerUrl + eurekaPath + appName + "/" + instanceId + "/status?value=UP&lastDirtyTimestamp=" + lastDirtyTimestamp,
@@ -191,8 +197,8 @@ func heartbeat(appName string) {
 
 // Sendheartbeat is a test case for heartbeat
 // you can test this function: send a heart beat to eureka server
-func Sendheartbeat(appName string)  {
-	heartbeat(appName)
+func Sendheartbeat(appName string, localip string)  {
+	heartbeat(appName, localip)
 }
 
 // deregister De-register application instance

@@ -6,4 +6,4 @@ package goeureka
 //Date  : 2020/12/3
 
 // define goeureka version
-const version = "v1.0.0"
+const version = "v1.0.1"
