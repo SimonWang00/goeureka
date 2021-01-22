@@ -9,8 +9,10 @@ import (
 	"crypto/tls"
 	"io/ioutil"
 	"log"
+	"net"
 	"net/http"
 	"strings"
+	"time"
 )
 
 // executeQuery request for eureka server
@@ -19,6 +21,15 @@ func executeQuery(requestAction RequestAction) ([]byte, error) {
 
 	var DefaultTransport http.RoundTripper = &http.Transport{
 		TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
+		Dial: func(netw, addr string) (net.Conn, error) {
+			conn, err := net.DialTimeout(netw, addr, time.Second*10)    //设置建立连接超时
+			if err != nil {
+				return nil, err
+			}
+			conn.SetDeadline(time.Now().Add(time.Second * 10))    //设置发送接受数据超时
+			return conn, nil
+		},
+		ResponseHeaderTimeout: time.Second * 10,
 	}
 
 	resp, err := DefaultTransport.RoundTrip(request)
@@ -65,7 +76,7 @@ func newHttpRequest(requestAction RequestAction) *http.Request {
 	)
 	//log.Printf("DoHttpRequest URL(%v)",requestAction.Url)
 	// load body and template for request
-	if requestAction.Body != "" {			// add body
+	if requestAction.Body != "" {					// add body
 		reader := strings.NewReader(requestAction.Body)
 		request, err = http.NewRequest(requestAction.Method, requestAction.Url, reader)
 	} else if requestAction.Template != "" {		// add template
@@ -77,11 +88,14 @@ func newHttpRequest(requestAction RequestAction) *http.Request {
 	if err != nil {
 		log.Fatal(err)
 	}
-
 	// Add headers for request
 	request.Header = map[string][]string{
 		"Accept":       {requestAction.Accept},
 		"Content-Type": {requestAction.ContentType},
+	}
+	// Add auth username and password
+	if username != ""{
+		request.SetBasicAuth(username,password)
 	}
 	return request
 }

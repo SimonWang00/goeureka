@@ -17,12 +17,11 @@ import (
 
 
 var (
-	instanceId string
 	Vport	   string
-	// define eureka path
-	eurekaPath = "/eureka/apps/"
-	// local eureka url
-	discoveryServerUrl = "http://127.0.0.1:8761"
+	username   string								// login username
+	password   string								// login password
+	eurekaPath = "/eureka/apps/"					// define eureka path
+	discoveryServerUrl = "http://127.0.0.1:8761"	// local eureka url
 )
 
 
@@ -31,10 +30,20 @@ var (
 // params: appName define your app name what you want
 // params: port app instance port
 // params: securePort
-func RegisterClient(eurekaUrl string, localip string, appName string, port string, securePort string) {
+func RegisterClient(eurekaUrl string, localip string, appName string, port string, securePort string, opt map[string]string) {
 	eurekaUrl = strings.Trim(eurekaUrl, "/")
-	discoveryServerUrl = eurekaUrl
-	RegisterLocal(appName,localip , port, securePort)
+	user ,_  := opt["username"]
+	passd,_  := opt["password"]
+	if len(user) >1 && len(passd) >1{
+		username = user
+		password = passd
+		discoveryServerUrl = eurekaUrl
+	} else if len(user) ==0 && len(passd) ==0{
+		discoveryServerUrl = eurekaUrl
+	} else {
+		panic("username or password is valid!")
+	}
+	RegisterLocal(appName, localip, port, securePort)
 }
 
 
@@ -47,7 +56,7 @@ func RegisterClient(eurekaUrl string, localip string, appName string, port strin
 func RegisterLocal(appName string, localip string, port string, securePort string) {
 	appName = strings.ToUpper(appName)
 	Vport = port
-	cfg := newConfig(appName,localip ,port,securePort )
+	cfg := newConfig(appName,localip ,port,securePort)
 
 	// define Register request
 	registerAction := RequestAction{
@@ -181,7 +190,7 @@ func heartbeat(appName string, localip string) {
 		return
 	} else {
 		if localip != ""{
-			// "127.149.222.221:GOLANG-SERVER:8889"
+			// "58.49.122.210:GOLANG-SERVER:8889"
 			instanceId = localip + ":" +  appName + ":" +  Vport
 		}
 		heartbeatAction := RequestAction{
