@@ -9,6 +9,8 @@ import (
 	"errors"
 	"fmt"
 	"net"
+	"os"
+	"strings"
 	"sync"
 	"time"
 )
@@ -44,6 +46,20 @@ func getLocalIP() string {
 		}
 	}
 	panic("Unable to get the local IP address")
+}
+
+// getIpFromDocker 从docker中的环境变量获取宿主的IP地址，dockerfile中需要传入IP到环境变量
+func getIpFromDocker() string {
+	environ := os.Environ()
+	for i := range environ {
+		env_param := environ[i]
+		param := strings.Split(env_param, "=")
+		if len(param) ==2 && param[0] == "SystemRoot"{
+			fmt.Println(param)
+			return param[1]
+		}
+	}
+	return ""
 }
 
 // GetLocalIPis getLocalIP for test
